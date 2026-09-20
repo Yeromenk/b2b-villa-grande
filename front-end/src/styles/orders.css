@@ -151,8 +151,13 @@
 }
 
 .order-detail-header {
+    gap: 24px;
+    flex-wrap: wrap;
     padding-bottom: 22px;
 }
+
+.order-status-field { display: grid; gap: 8px; min-width: 170px; }
+.order-status-field > span { color: #718387; font-size: 11px; font-weight: 600; }
 
 .order-status-select {
     min-height: 36px;
@@ -223,7 +228,7 @@
 }
 
 .order-items-detail {
-    margin-top: 0;
+    margin-top: 22px;
 }
 
 .order-items-list {
@@ -322,13 +327,14 @@
 
 .order-item-fields {
     display: grid;
-    grid-template-columns: repeat(5, minmax(105px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
     gap: 10px;
     align-items: start;
     padding-top: 13px;
 }
 
 .order-item-field {
+    min-width: 0;
     display: grid;
     align-content: start;
     gap: 6px;
@@ -356,19 +362,36 @@
 
 .quantity-field .quantity-control {
     display: grid;
-    grid-template-columns: 24px 24px 24px;
-    width: 80px;
-    min-height: 34px;
+    grid-template-columns: 28px minmax(0, 1fr) 28px;
+    width: 100%;
+    max-width: 170px;
+    min-height: 38px;
     gap: 4px;
     padding: 3px;
     background: #fff;
 }
 
+.quantity-field .quantity-control .order-number-input {
+    width: 100%;
+    min-width: 0;
+    min-height: 28px;
+    padding: 0 2px;
+    border: 0;
+    border-radius: 0;
+    text-align: center;
+    font-size: 12px;
+    appearance: textfield;
+    -moz-appearance: textfield;
+}
+.quantity-field .order-number-input::-webkit-inner-spin-button,
+.quantity-field .order-number-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.quantity-field .quantity-control:focus-within { outline: 2px solid #92b7ad; outline-offset: 2px; }
+
 .quantity-button {
     display: grid;
     place-items: center;
-    width: 24px !important;
-    height: 24px !important;
+    width: 28px !important;
+    height: 28px !important;
     border: 1px solid #dce3e5 !important;
     border-radius: 4px;
     background: #f8faf9 !important;
@@ -458,7 +481,7 @@
     }
 
     .order-item-fields {
-        grid-template-columns: repeat(3, minmax(100px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
     }
 }
 
@@ -504,8 +527,13 @@
     }
 
     .order-item-fields {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
+
+    .order-item-heading { flex-direction: column; }
+    .order-item-heading-actions { width: 100%; justify-content: space-between; }
+    .orders-table-heading { flex-wrap: wrap; gap: 12px; }
+    .order-save-bar { flex-wrap: wrap; }
 
     .order-totals {
         grid-template-columns: 1fr;

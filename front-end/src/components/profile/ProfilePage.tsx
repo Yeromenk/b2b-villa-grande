@@ -1,70 +1,50 @@
-import { Mail, Phone, Save, ShieldCheck, UserRound } from "lucide-react";
-import { useEffect, useState } from "react";
-import { ProfileSkeleton } from "./ProfileSkeleton";
-import { ConfirmDialog } from "../ui/ConfirmDialog";
+import { Mail, Phone, Save, UserRound } from "lucide-react";
+import { useState } from "react";
+import { profileInitials } from "../../hooks/useProfile";
+import type { Profile } from "../../hooks/useProfile";
 
 type ProfilePageProps = {
+  profile: Profile;
+  onSave: (profile: Profile) => void;
   onNotify: (message: string) => void;
 };
 
-export function ProfilePage({ onNotify }: ProfilePageProps) {
-  const [firstName, setFirstName] = useState("Олексій");
-  const [lastName, setLastName] = useState("Коваль");
-  const [email, setEmail] = useState("oleksii.koval@villagrande.ua");
-  const [phone, setPhone] = useState("+380 67 245 18 40");
-  const [password, setPassword] = useState("");
+export function ProfilePage({ profile, onSave, onNotify }: ProfilePageProps) {
+  const [draft, setDraft] = useState(profile);
+  const [error, setError] = useState("");
   const [saved, setSaved] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [showSaveConfirm, setShowSaveConfirm] = useState(false);
-
-  useEffect(() => {
-    const timer = window.setTimeout(() => setIsLoading(false), 350);
-    return () => window.clearTimeout(timer);
-  }, []);
-
-  function saveProfile() {
-    setSaved(true);
-    onNotify("Дані профілю збережено");
-    window.setTimeout(() => setSaved(false), 2400);
+  function change(key: keyof Profile, value: string) {
+    setDraft((current) => ({ ...current, [key]: value }));
+    setSaved(false);
+    setError("");
   }
 
-  if (isLoading) return <><header className="page-header"><div><span className="eyebrow">ОБЛІКОВИЙ ЗАПИС</span><h1>Мій профіль</h1></div></header><ProfileSkeleton /></>;
-
-  return (
-    <>
-      <header className="page-header">
-        <div>
-          <span className="eyebrow">ОБЛІКОВИЙ ЗАПИС</span>
-          <h1>Мій профіль</h1>
-          <p className="page-description">Керуйте контактними даними та доступом до робочого кабінету.</p>
+  return <>
+    <header className="page-header"><div><span className="eyebrow">ОБЛІКОВИЙ ЗАПИС</span><h1>Мій профіль</h1><p className="page-description">Керуйте контактними даними робочого кабінету.</p></div></header>
+    <div className="profile-layout">
+      <section className="profile-card profile-summary">
+        <div className="profile-avatar">{profileInitials(profile)}</div>
+        <h2>{profile.firstName} {profile.lastName}</h2>
+        <span className="profile-role">Менеджер комплектації</span>
+        <span className="profile-email">{profile.email}</span>
+        <div className="profile-divider" />
+        <p>Дані зберігаються в цьому браузері та відновлюються після перезавантаження сторінки.</p>
+      </section>
+      <form className="profile-card profile-form-card" onSubmit={(event) => {
+        event.preventDefault();
+        try { onSave(draft); setSaved(true); setError(""); onNotify("Дані профілю збережено"); }
+        catch (error) { setError(error instanceof Error ? error.message : "Не вдалося зберегти профіль"); }
+      }}>
+        <div className="profile-section-heading"><div><h2>Особисті дані</h2><p>Збережене ім’я відображається в робочому профілі.</p></div><UserRound size={20} /></div>
+        <div className="profile-form">
+          <label>Ім&apos;я<input autoComplete="given-name" required maxLength={100} value={draft.firstName} onChange={(event) => change("firstName", event.target.value)} /></label>
+          <label>Прізвище<input autoComplete="family-name" required maxLength={100} value={draft.lastName} onChange={(event) => change("lastName", event.target.value)} /></label>
+          <label className="field-wide"><span>Email</span><div className="input-with-icon"><Mail size={16} /><input autoComplete="email" type="email" required maxLength={254} value={draft.email} onChange={(event) => change("email", event.target.value)} /></div></label>
+          <label className="field-wide"><span>Телефон</span><div className="input-with-icon"><Phone size={16} /><input autoComplete="tel" type="tel" maxLength={50} value={draft.phone} onChange={(event) => change("phone", event.target.value)} /></div></label>
         </div>
-      </header>
-
-      <div className="profile-layout">
-        <section className="profile-card profile-summary">
-          <div className="profile-avatar">ОК</div>
-          <h2>{firstName} {lastName}</h2>
-          <span className="profile-role">Менеджер комплектації</span>
-          <span className="profile-email">{email}</span>
-          <div className="profile-divider" />
-          <div className="profile-security"><ShieldCheck size={17} /><span>Обліковий запис активний</span></div>
-          <p>Дані профілю доступні тільки авторизованим працівникам Villa Grande.</p>
-        </section>
-
-        <section className="profile-card profile-form-card">
-          <div className="profile-section-heading"><div><h2>Особисті дані</h2><p>Ці дані використовуються у внутрішніх документах і КП.</p></div><UserRound size={20} /></div>
-          <div className="profile-form">
-            <label>Ім&apos;я<input value={firstName} onChange={(event) => setFirstName(event.target.value)} /></label>
-            <label>Прізвище<input value={lastName} onChange={(event) => setLastName(event.target.value)} /></label>
-            <label className="field-wide"><span>Email</span><div className="input-with-icon"><Mail size={16} /><input type="email" value={email} onChange={(event) => setEmail(event.target.value)} /></div></label>
-            <label className="field-wide"><span>Телефон</span><div className="input-with-icon"><Phone size={16} /><input value={phone} onChange={(event) => setPhone(event.target.value)} /></div></label>
-            <label>Пароль<input type="password" value={password} onChange={(event) => setPassword(event.target.value)} placeholder="Введіть новий пароль" /></label>
-          </div>
-          <div className="profile-form-actions"><span className={saved ? "save-message visible" : "save-message"}>{saved ? "Дані збережено" : ""}</span><button className="primary-button" onClick={() => setShowSaveConfirm(true)}><Save size={16} />Зберегти зміни</button></div>
-        </section>
-
-      </div>
-      {showSaveConfirm && <ConfirmDialog title="Зберегти зміни?" message="Нові дані профілю будуть використані в робочих документах." confirmLabel="Зберегти" onCancel={() => setShowSaveConfirm(false)} onConfirm={() => { setShowSaveConfirm(false); saveProfile(); }} />}
-    </>
-  );
+        {error && <p className="order-save-error" role="alert">{error}</p>}
+        <div className="profile-form-actions"><span role="status" className={saved ? "save-message visible" : "save-message"}>{saved ? "Дані збережено" : ""}</span><button type="submit" className="primary-button"><Save size={16} />Зберегти зміни</button></div>
+      </form>
+    </div>
+  </>;
 }

@@ -8,18 +8,20 @@ import { SpecificationPage } from "./components/specification/SpecificationPage"
 import { ErrorPage } from "./pages/ErrorPage";
 
 function OrdersRoute() {
-    const { orders, currency, changeOrderStatus, notify } = useOutletContext<AppOutletContext>();
-    return <OrdersPage orders={orders} currency={currency} onStatusChange={changeOrderStatus} onNotify={notify} />;
+    const { orders, currency, saveOrder, ordersLoading, ordersError, reloadOrders, notify } = useOutletContext<AppOutletContext>();
+    return <OrdersPage orders={orders} currency={currency} onSave={saveOrder} loading={ordersLoading} error={ordersError} onReload={reloadOrders} onNotify={notify} />;
 }
 
 function ProfileRoute() {
-    const { notify } = useOutletContext<AppOutletContext>();
-    return <ProfilePage onNotify={notify} />;
+    const { notify, profile, saveProfile } = useOutletContext<AppOutletContext>();
+    return <ProfilePage profile={profile} onSave={saveProfile} onNotify={notify} />;
 }
 
 function SpecificationRoute() {
-    const { cart, currency, createOrder, notify, removeFromCart } = useOutletContext<AppOutletContext>();
-    return <SpecificationPage productIds={cart} currency={currency} onRemoveFromCart={removeFromCart} onCreateOrder={createOrder} onNotify={notify} />;
+    const { products, productsLoading, productsError, reloadProducts, cart, currency, createOrder, notify, removeFromCart } = useOutletContext<AppOutletContext>();
+    if (productsLoading) return <p role="status">Завантажуємо товари специфікації…</p>;
+    if (productsError) return <div className="empty-state" role="alert"><h2>Не вдалося завантажити товари</h2><p>{productsError}</p><button onClick={reloadProducts}>Повторити</button></div>;
+    return <SpecificationPage productCatalog={products} productIds={cart} currency={currency} onRemoveFromCart={removeFromCart} onCreateOrder={createOrder} onNotify={notify} />;
 }
 
 const router = createBrowserRouter([

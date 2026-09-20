@@ -1,61 +1,309 @@
-.app-shell { display: flex; width: 100%; min-height: 100vh; }
+.app-shell {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+}
 
 .sidebar {
-  position: sticky;
-  top: 0;
-  width: 268px;
-  height: 100vh;
-  min-height: 620px;
-  flex: 0 0 268px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  padding: 24px 16px 18px;
-  background: #102b2b;
-  color: #dce8e5;
+    position: sticky;
+    top: 0;
+    width: 268px;
+    height: 100vh;
+    min-height: 620px;
+    flex: 0 0 268px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    padding: 24px 16px 18px;
+    background: #102b2b;
+    color: #dce8e5;
 }
 
-.brand { display: flex; align-items: center; gap: 11px; padding: 0 10px 30px; }
-.brand-mark { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: #d8a35d; color: #102b2b; font-weight: 800; }
-.brand strong, .brand span, .user-card strong, .user-card span { display: block; }
-.brand strong { font-size: 14px; }
-.brand span, .user-card span { margin-top: 4px; color: #88a3a0; font-size: 11px; }
-.main-nav { display: grid; gap: 4px; }
-.workspace-label { padding: 0 8px 8px; color: #6f918d; font-size: 9px; font-weight: 800; letter-spacing: 1.5px; }
-.nav-item { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 10px 13px; border: 0; border-radius: 8px; background: transparent; color: #9eb6b2; text-align: left; text-decoration: none; font-size: 13px; font-weight: 500; }
-.nav-item.active, .nav-item:hover { background: #1d4543; color: white; }
-.nav-item b { min-width: 21px; margin-left: auto; padding: 3px; border-radius: 10px; background: #d8a35d; color: #102b2b; font-size: 11px; text-align: center; }
-.catalog-toggle svg:last-child { margin-left: auto; transition: transform 160ms ease; }
-.catalog-toggle .chevron-open { transform: rotate(180deg); }
-.catalog-submenu { display: grid; gap: 3px; margin: 1px 0 8px 19px; padding: 4px 0 4px 16px; border-left: 1px solid #37625e; }
-.catalog-submenu a { display: flex; align-items: center; gap: 8px; min-height: 34px; padding: 0 8px; border-radius: 6px; color: #91aca8; font-size: 12px; text-align: left; text-decoration: none; }
-.catalog-submenu a:hover, .catalog-submenu a.selected { background: #1d4543; color: #fff; }
-.catalog-submenu a b { margin-left: auto; color: #6f918d; font-size: 10px; font-weight: 500; }
-.catalog-submenu a.selected b { color: #d8a35d; }
-.sidebar-bottom { margin-top: auto; padding-top: 18px; }
-.sidebar-exchange-rates { display: grid; gap: 5px; margin: 0 8px 16px; padding: 12px 13px; border: 1px solid #28504d; border-radius: 8px; background: #163636; }
-.sidebar-exchange-rates > span { margin-bottom: 2px; color: #6f918d; font-size: 9px; font-weight: 800; letter-spacing: 1.3px; }
-.sidebar-exchange-rates strong { display: flex; justify-content: space-between; color: #dce8e5; font-size: 11px; font-weight: 600; }
-.sidebar-exchange-rates strong b { color: #e1b779; font-weight: 800; }
-.currency-sidebar-switcher { display: flex; gap: 4px; margin: 0 8px 16px; }
-.currency-sidebar-switcher button { flex: 1; min-height: 30px; border: 1px solid #37625e; border-radius: 5px; background: transparent; color: #9eb6b2; font-size: 10px; font-weight: 700; }
-.currency-sidebar-switcher button.selected { border-color: #d8a35d; background: #d8a35d; color: #102b2b; }
-.user-card { display: flex; align-items: center; gap: 9px; width: 100%; margin-top: 14px; padding: 16px 8px 0; border: 0; border-top: 1px solid #28504d; background: transparent; color: inherit; text-align: left; text-decoration: none; }
-.user-card > svg { margin-left: auto; }
-.user-card:hover, .user-card.active { color: #fff; }
-.user-card:hover .avatar, .user-card.active .avatar { box-shadow: 0 0 0 3px rgba(216, 163, 93, .22); }
-.avatar { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: #e1b779; color: #173333; font-size: 11px; font-weight: 800; }
-.main-content { flex: 1; min-width: 0; padding: 34px clamp(28px, 4vw, 68px) 60px; }
-.topbar, .content-heading, .product-footer { display: flex; align-items: center; justify-content: space-between; }
-.header-context { color: #718387; font-size: 12px; }
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 11px;
+    padding: 0 10px 30px;
+}
+
+.brand-mark {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #d8a35d;
+    color: #102b2b;
+    font-weight: 800;
+}
+
+.brand strong, .brand span, .user-card strong, .user-card span {
+    display: block;
+}
+
+.brand strong {
+    font-size: 14px;
+}
+
+.brand span, .user-card span {
+    margin-top: 4px;
+    color: #88a3a0;
+    font-size: 11px;
+}
+
+.main-nav {
+    display: grid;
+    gap: 4px;
+    min-height: 0;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #37625e transparent;
+}
+
+.workspace-label {
+    padding: 0 8px 8px;
+    color: #6f918d;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 44px;
+    padding: 10px 13px;
+    border: 0;
+    border-radius: 8px;
+    background: transparent;
+    color: #9eb6b2;
+    text-align: left;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.nav-item.active, .nav-item:hover {
+    background: #1d4543;
+    color: white;
+}
+
+.nav-item b {
+    min-width: 21px;
+    margin-left: auto;
+    padding: 3px;
+    border-radius: 10px;
+    background: #d8a35d;
+    color: #102b2b;
+    font-size: 11px;
+    text-align: center;
+}
+
+.catalog-toggle svg:last-child {
+    margin-left: auto;
+    transition: transform 160ms ease;
+}
+
+.catalog-toggle .chevron-open {
+    transform: rotate(180deg);
+}
+
+.catalog-submenu {
+    display: grid;
+    gap: 3px;
+    margin: 1px 0 8px 19px;
+    padding: 4px 0 4px 16px;
+    border-left: 1px solid #37625e;
+}
+
+.catalog-submenu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 34px;
+    padding: 0 8px;
+    border-radius: 6px;
+    color: #91aca8;
+    font-size: 12px;
+    text-align: left;
+    text-decoration: none;
+}
+
+.catalog-submenu a:hover, .catalog-submenu a.selected {
+    background: #1d4543;
+    color: #fff;
+}
+
+.catalog-submenu a b {
+    margin-left: auto;
+    color: #6f918d;
+    font-size: 10px;
+    font-weight: 500;
+}
+
+.catalog-submenu a.selected b {
+    color: #d8a35d;
+}
+
+.sidebar-bottom {
+    flex-shrink: 0;
+    margin-top: auto;
+    padding-top: 18px;
+}
+
+.sidebar-exchange-rates {
+    display: grid;
+    gap: 5px;
+    margin: 0 8px 16px;
+    padding: 12px 13px;
+    border: 1px solid #28504d;
+    border-radius: 8px;
+    background: #163636;
+}
+
+.sidebar-exchange-rates > span {
+    margin-bottom: 2px;
+    color: #6f918d;
+    font-size: 9px;
+    font-weight: 800;
+    letter-spacing: 1.3px;
+}
+
+.sidebar-exchange-rates strong {
+    display: flex;
+    justify-content: space-between;
+    color: #dce8e5;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.sidebar-exchange-rates strong b {
+    color: #e1b779;
+    font-weight: 800;
+}
+
+.currency-sidebar-switcher {
+    display: flex;
+    gap: 4px;
+    margin: 0 8px 16px;
+}
+
+.currency-sidebar-switcher button {
+    flex: 1;
+    min-height: 30px;
+    border: 1px solid #37625e;
+    border-radius: 5px;
+    background: transparent;
+    color: #9eb6b2;
+    font-size: 10px;
+    font-weight: 700;
+}
+
+.currency-sidebar-switcher button.selected {
+    border-color: #d8a35d;
+    background: #d8a35d;
+    color: #102b2b;
+}
+
+.user-card {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: 14px;
+    padding: 16px 8px 0;
+    border: 0;
+    border-top: 1px solid #28504d;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    text-decoration: none;
+}
+
+.user-card > svg {
+    margin-left: auto;
+}
+
+.user-card:hover, .user-card.active {
+    color: #fff;
+}
+
+.user-card:hover .avatar, .user-card.active .avatar {
+    box-shadow: 0 0 0 3px rgba(216, 163, 93, .22);
+}
+
+.avatar {
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #e1b779;
+    color: #173333;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.main-content {
+    flex: 1;
+    min-width: 0;
+    padding: 34px clamp(28px, 4vw, 68px) 60px;
+}
+
+.topbar, .content-heading, .product-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.header-context {
+    color: #718387;
+    font-size: 12px;
+}
 
 @media (max-width: 800px) {
-  .sidebar { width: 72px; flex-basis: 72px; padding: 20px 10px; }
-  .brand { padding: 0 7px 35px; }
-  .brand div:not(.brand-mark), .nav-item:not(.active)::after, .nav-item { font-size: 0; }
-  .nav-item { justify-content: center; }
-  .nav-item b { position: absolute; margin: -28px -28px 0 0; }
-  .user-card { justify-content: center; }
-  .user-card > div:not(.avatar), .user-card > svg { display: none; }
-  .main-content { padding: 25px 18px; }
+    .sidebar {
+        width: 72px;
+        flex-basis: 72px;
+        padding: 20px 10px;
+    }
+
+    .brand {
+        padding: 0 7px 35px;
+    }
+
+    .brand div:not(.brand-mark), .nav-item:not(.active)::after, .nav-item {
+        font-size: 0;
+    }
+
+    .nav-item {
+        justify-content: center;
+    }
+
+    .nav-item b {
+        position: absolute;
+        margin: -28px -28px 0 0;
+    }
+
+    .user-card {
+        justify-content: center;
+    }
+
+    .user-card > div:not(.avatar), .user-card > svg {
+        display: none;
+    }
+
+    .main-content {
+        padding: 25px 18px;
+    }
+    .catalog-submenu { margin: 0; padding: 0; border: 0; }
+    .catalog-submenu a { flex-direction: column; gap: 3px; padding: 7px 1px; font-size: 8px; text-align: center; }
+    .catalog-submenu a span { line-height: 11px; overflow-wrap: anywhere; }
+    .catalog-submenu a b { display: none; }
 }
+.sidebar-exchange-rates small { color: #8a9a9d; font-size: 10px; line-height: 1.5; }
+.currency-sidebar-switcher button:disabled { cursor: not-allowed; opacity: .5; }
+.user-card > div:nth-child(2) { min-width: 0; }
+.user-card strong { overflow-wrap: anywhere; }

@@ -1,6 +1,6 @@
-export type StockStatus = "В наявності" | "Під замовлення";
-export type PriceSegment = "Бюджет" | "Медіум" | "Преміум";
-export type ProductDepartment = "Сантехніка" | "Двері";
+export type StockStatus = "В наявності" | "Під замовлення" | "Немає в наявності" | "Наявність невідома";
+export type PriceSegment = "Бюджет" | "Медіум" | "Преміум" | "Не визначено";
+export type ProductDepartment = "Сантехніка" | "Плитка" | "Натуральний камінь" | "СПА" | "Інженерія" | "Двері" | "Покриття для підлоги" | "Панелі";
 export type Currency = "UAH" | "EUR";
 
 export type Product = {
@@ -10,6 +10,8 @@ export type Product = {
   article: string;
   category: string;
   price: number;
+  purchasePrice?: number | null;
+  unit?: string;
   stock: StockStatus;
   color: string;
   supplier: string;
