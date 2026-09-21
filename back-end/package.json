@@ -1,0 +1,17 @@
+{
+  "name": "villa-grande-backend",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=24.13.0" },
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js",
+    "import": "node src/import.js",
+    "import:laterem": "node src/import-laterem.js",
+    "import:laterem:purchase-prices": "node src/import-laterem-purchase-prices.js",
+    "import:ceramamarket": "node src/import-ceramamarket.js",
+    "test": "node --test"
+  },
+  "dependencies": { "cheerio": "^1.2.0", "ipaddr.js": "^2.2.0", "robots-parser": "^3.0.1" }
+}

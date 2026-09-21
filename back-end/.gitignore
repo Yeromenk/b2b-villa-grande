@@ -1,0 +1,4 @@
+node_modules/
+data/
+.env
+sources.local.json

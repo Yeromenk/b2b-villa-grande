@@ -1,0 +1,10 @@
+[
+  {
+    "id": "supplier-example",
+    "name": "Постачальник",
+    "origin": "https://shop.example.com",
+    "department": "Сантехніка",
+    "category": "Змішувачі",
+    "urls": ["https://shop.example.com/products/example"]
+  }
+]
