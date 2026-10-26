@@ -1,7 +1,7 @@
 import {setTimeout as delay} from 'node:timers/promises';
 import {createStore} from './store.js';
 import {connectLaterem} from './laterem-browser.js';
-import {parseLateremNumber, parseLateremRates} from './laterem.js';
+import {parseLateremNumber, readLateremRates} from './laterem.js';
 import {lateremSections, parseSections} from './laterem-sections.js';
 
 const sections = parseSections(process.argv.slice(2).length ? process.argv.slice(2) : ['--section', 'all']);
@@ -35,8 +35,7 @@ async function fetchPage(authorization, category, page) {
 
 try {
     const authorization = await browser.authorization();
-    const nav = await browser.evaluate('document.querySelector("nav")?.innerText || ""');
-    const {eurUah} = parseLateremRates(nav);
+    const {eurUah} = await readLateremRates(browser);
     store = createStore();
     let updatedTotal = 0;
     let receivedTotal = 0;

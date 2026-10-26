@@ -1,6 +1,6 @@
 import {createStore} from './store.js';
 import {connectLaterem} from './laterem-browser.js';
-import {collectLaterem, parseLateremRates} from './laterem.js';
+import {collectLaterem, readLateremRates} from './laterem.js';
 import {lateremSections, parseSections} from './laterem-sections.js';
 
 async function main() {
@@ -20,8 +20,7 @@ async function main() {
     let store;
     try {
         const authorization = await browser.authorization();
-        const nav = await browser.evaluate('document.querySelector("nav")?.innerText || ""');
-        const rates = parseLateremRates(nav);
+        const rates = await readLateremRates(browser);
         const {eurUah} = rates;
         store = createStore();
         for (const section of keys) {

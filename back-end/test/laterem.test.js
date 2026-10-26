@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { collectLaterem, normalizeLaterem, parseLateremNumber, parseLateremRates } from '../src/laterem.js';
+import { collectLaterem, normalizeLaterem, parseLateremNumber, parseLateremRates, readLateremRates } from '../src/laterem.js';
 import { createStore } from '../src/store.js';
 import { parseSections } from '../src/laterem-sections.js';
 
@@ -34,6 +34,22 @@ test('section refresh cannot delete plumbing, move an existing product, or chang
 });
 
 const row = { id: '12', title: 'Змішувач', code_product: 'ABC', category: 'Змішувачі', cat_id: '4', brand: 'Brand', img: 'photo.webp', price_1: '1 033,85', price_opt: '620,31', stock: 2 };
+test('waits for navigation rates after reload and checks every navigation element', async () => {
+  let reads = 0;
+  const browser = {evaluate: async () => ++reads === 1 ? ['Catalog'] : ['Catalog', 'EUR UAH 52,10']};
+  assert.deepEqual(await readLateremRates(browser, {eurUah: undefined, sleep: async () => {}}), {eurUah: 52.1});
+  assert.equal(reads, 2);
+  await assert.rejects(readLateremRates({evaluate: async () => ['Catalog']}, {
+    eurUah: undefined, attempts: 2, sleep: async () => {},
+  }), /LATEREM_EUR_UAH/);
+});
+
+test('explicit supplier rate accepts localized decimals and rejects invalid values', async () => {
+  assert.deepEqual(await readLateremRates(null, {eurUah: '52,10'}), {eurUah: 52.1});
+  for (const eurUah of ['0', '-1', '', 'invalid']) {
+    await assert.rejects(readLateremRates(null, {eurUah}));
+  }
+});
 test('Laterem localized prices, currency, retail price, image and stock', () => {
   const product = normalizeLaterem(row, 52);
   assert.equal(product.price, 53760.2);
@@ -59,6 +75,32 @@ test('Laterem localized prices, currency, retail price, image and stock', () => 
 
 const page = (currentPage, data, totalItem = 2) => ({ status: true, currentPage, data, totalItem, totalPage: 2 });
 const options = { eurUah: 52, sleep: async () => {} };
+test('negative supplier stock imports every page and persists as unavailable; negative prices remain invalid', async () => {
+  const result = await collectLaterem(async (n) => page(n, [{
+    ...row, id: n === 1 ? '4426' : '4427', stock: n === 1 ? -7 : '-0,5',
+  }]), options);
+  assert.equal(result.products.length, 2);
+  assert.equal(result.skipped, 0);
+  const store = createStore(':memory:');
+  try {
+    store.replaceSource('laterem', result.products, {startedAt: new Date().toISOString(), errors: []});
+    const products = store.list();
+    assert.equal(products.length, 2);
+    assert.deepEqual(products.map(product => product.quantity).sort((a, b) => a - b), [-7, -0.5]);
+    assert.ok(products.every(product => product.stock === 'Немає в наявності'));
+  } finally { store.close(); }
+  for (const field of ['price_1', 'price_opt', 'onlinePrice']) {
+    assert.throws(() => normalizeLaterem({...row, [field]: '-7'}, 52,
+      field === 'onlinePrice' ? field : 'price_1'), /Invalid Laterem number/);
+  }
+});
+test('invalid numeric values identify the page, product and field without replacing the section', async () => {
+  for (const field of ['price_1', 'price_opt', 'stock']) {
+    await assert.rejects(collectLaterem(async (n) => page(n, [{ ...row, [field]: 'invalid' }]), options),
+      new RegExp(`page 1: Invalid Laterem number: product 12, field ${field}, value "invalid"`));
+  }
+  assert.equal(normalizeLaterem({ ...row, stock: '  ' }, 52).quantity, null);
+});
 test('collects every page, accounts for zero prices and rejects partial or repeated pages', async () => {
   const result = await collectLaterem(async (n) => page(n, [{ ...row, id: String(n), price_1: n === 2 ? '0,00' : row.price_1 }]), options);
   assert.equal(result.products.length, 1);
