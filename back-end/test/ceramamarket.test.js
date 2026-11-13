@@ -34,6 +34,16 @@ test('Ceramamarket preserves current UAH price, unit, stable ID and category wit
   assert.equal(unclassified.externalId, '42');
   assert.equal(unclassified.price, 1234.5);
 });
+test('Ceramamarket reads image-only category labels and prefers explicit link text', () => {
+  const panels = fixture().replaceAll('/plutka/keramogranit', '/paneli/stinovi-paneli')
+    .replace('Керамограніт</a>', '<img alt="Декоративна панель FITWALL"></a>');
+  assert.equal(parseCeramaPage(panels, 'panels').products[0].category, 'Декоративна панель FITWALL');
+  const textLink = '<a href="/paneli/stinovi-paneli">Стінові панелі</a>';
+  for (const html of [textLink + panels, panels + textLink]) {
+    assert.equal(parseCeramaPage(html, 'panels').products[0].category, 'Стінові панелі');
+  }
+  assert.throws(() => parseCeramaPage(panels.replace('alt="Декоративна панель FITWALL"', 'alt=""'), 'panels'), /Missing category label/);
+});
 test('Ceramamarket fails closed for blocked robots, missing cards and bad pagination', async () => {
   await assert.rejects(collectCerama('tiles', { fetcher: async () => ({ status: 200, body: 'User-agent: *\nDisallow: /' }), sleep: async () => {} }), /Disallowed/);
   assert.throws(() => parseCeramaPage('<html>Login required</html>', 'tiles'), /No product/);

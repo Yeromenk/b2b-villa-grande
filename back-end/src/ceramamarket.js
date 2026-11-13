@@ -23,11 +23,12 @@ export function parseCeramaPage(html, section, page = 1) {
   const $ = load(html);
   const categories = new Map();
   $('a[href]').each((_, element) => {
-    const name = clean($(element).text());
+    const text = clean($(element).text());
+    const name = text || clean($(element).find('img[alt]').first().attr('alt'));
     if (!name) return;
     try {
       const url = sameSite($(element).attr('href'));
-      if (url.pathname.startsWith(config.path + '/') && url.pathname.split('/').filter(Boolean).length === 2 && !url.search) categories.set(url.pathname, name);
+      if (url.pathname.startsWith(config.path + '/') && url.pathname.split('/').filter(Boolean).length === 2 && !url.search && (text || !categories.has(url.pathname))) categories.set(url.pathname, name);
     } catch { /* Navigation can contain external links. */ }
   });
   const cards = $('.products-list .product-card');
