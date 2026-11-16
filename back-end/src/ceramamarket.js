@@ -60,7 +60,13 @@ export function parseCeramaPage(html, section, page = 1) {
     const categoryPath = '/' + url.pathname.split('/').filter(Boolean).slice(0, 2).join('/');
     const category = href ? categories.get(categoryPath) : 'Інше';
     if (!category) throw new Error(`Missing category label: ${categoryPath}`);
-    const image = card.find('.product-card__img img').attr('src');
+    // The img fallback can be desaturated; the storefront displays the full-color
+    // picture source. Prefer its desktop variant, retaining img-only support.
+    const picture = card.find('.product-card__img picture').first();
+    const source = picture.find('source[srcset]:not([media])').first().attr('srcset')
+      || picture.find('source[srcset]').first().attr('srcset');
+    const image = source?.split(',')[0].trim().split(/\s+/)[0]
+      || card.find('.product-card__img img').attr('src');
     products.push({ sourceId: 'ceramamarket', externalId, sourceUrl: url.href, importedAt: new Date().toISOString(),
       name, article: '', brand: clean(card.find('.product-card__producer:not(.product-card__collection) .producer__name').first().text()),
       category, department: config.department, supplier: 'Ceramamarket', section,

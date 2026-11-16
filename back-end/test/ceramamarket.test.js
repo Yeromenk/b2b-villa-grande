@@ -34,6 +34,16 @@ test('Ceramamarket preserves current UAH price, unit, stable ID and category wit
   assert.equal(unclassified.externalId, '42');
   assert.equal(unclassified.price, 1234.5);
 });
+test('Ceramamarket uses the full-color desktop picture source instead of the grayscale img fallback', () => {
+  const html = fixture().replace('<img src="/image.webp">', `<picture>
+    <source media="(max-width: 575px)" srcset="/mobile-color.webp">
+    <source srcset="/desktop-color.webp 1x, /large-color.webp 2x">
+    <img src="/grayscale.webp">
+  </picture>`);
+  assert.equal(parseCeramaPage(html, 'tiles').products[0].image, 'https://ceramamarket.com/desktop-color.webp');
+  assert.equal(parseCeramaPage(fixture(), 'tiles').products[0].image, 'https://ceramamarket.com/image.webp');
+  assert.throws(() => parseCeramaPage(html.replace('/desktop-color.webp', 'https://example.com/image.webp'), 'tiles'), /Unexpected Ceramamarket URL/);
+});
 test('Ceramamarket reads image-only category labels and prefers explicit link text', () => {
   const panels = fixture().replaceAll('/plutka/keramogranit', '/paneli/stinovi-paneli')
     .replace('Керамограніт</a>', '<img alt="Декоративна панель FITWALL"></a>');
